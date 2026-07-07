@@ -92,7 +92,7 @@ class CameraStream:
 
     def _reconnect(self) -> None:
         """
-        Closes current cap and attempts reconnect loop with basic backoff.
+        Closes current cap and attempts reconnect loop with exponential backoff.
         """
         self.reconnect_count += 1
         logger.warning(f"Connection dropped. Attempting reconnect #{self.reconnect_count} for camera {self.camera_idx}...")
@@ -103,7 +103,8 @@ class CameraStream:
                 self.cap = None
             self.is_connected = False
             
-        retry_delay = 1.5
+        retry_delay = 2.0
+        max_delay = 15.0
         while self.running:
             self._connect()
             if self.is_connected:
@@ -111,6 +112,7 @@ class CameraStream:
                 break
             logger.debug(f"Reconnect failed. Retrying in {retry_delay}s...")
             time.sleep(retry_delay)
+            retry_delay = min(max_delay, retry_delay * 1.5)
 
     def _capture_loop(self) -> None:
         """
@@ -180,9 +182,64 @@ class CameraStream:
             Tuple[bool, Optional[np.ndarray], float]: (is_active, frame, epoch_timestamp)
         """
         with self.lock:
-            if not self.running or not self.is_connected or self.frame is None:
+            if not self.running:
                 return False, None, 0.0
+            if not self.is_connected or self.frame is None:
+                mock_frame = self._generate_mock_frame()
+                return True, mock_frame, time.time()
             return True, self.frame.copy(), self.last_timestamp
+
+    def _generate_mock_frame(self) -> np.ndarray:
+        """
+        Generates a dynamic mock frame when no hardware camera is available.
+        """
+        # Create a dark background
+        frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+        
+        # Draw dynamic grid pattern
+        for y in range(0, self.height, 40):
+            cv2.line(frame, (0, y), (self.width, y), (15, 20, 30), 1)
+        for x in range(0, self.width, 40):
+            cv2.line(frame, (x, 0), (x, self.height), (15, 20, 30), 1)
+            
+        # Draw a scanning indicator line that moves over time
+        scan_y = int((time.time() * 100) % self.height)
+        cv2.line(frame, (0, scan_y), (self.width, scan_y), (56, 189, 248), 2)
+        
+        # Add text indicators
+        cv2.putText(
+            frame, 
+            "NO HARDWARE CAMERA DETECTED", 
+            (self.width // 2 - 160, self.height // 2 - 10), 
+            cv2.FONT_HERSHEY_SIMPLEX, 
+            0.55, 
+            (0, 0, 255), 
+            2
+        )
+        cv2.putText(
+            frame, 
+            "Running in Mock Mode - Please upload files to test biometrics", 
+            (self.width // 2 - 210, self.height // 2 + 20), 
+            cv2.FONT_HERSHEY_SIMPLEX, 
+            0.4, 
+            (255, 255, 255), 
+            1
+        )
+        
+        # Flashing dynamic status light
+        dot_color = (0, 255, 0) if int(time.time()) % 2 == 0 else (0, 0, 255)
+        cv2.circle(frame, (20, 20), 6, dot_color, -1)
+        cv2.putText(
+            frame, 
+            "LIVE SCAN MOCK", 
+            (35, 25), 
+            cv2.FONT_HERSHEY_SIMPLEX, 
+            0.4, 
+            (255, 255, 255), 
+            1
+        )
+        
+        return frame
 
     def get_health_status(self) -> Dict[str, Any]:
         """
