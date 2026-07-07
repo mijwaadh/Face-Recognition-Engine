@@ -77,7 +77,7 @@ jobs:
 
       # Continuous Deployment: SSH onto cloud instance and reload stack (only on push to main)
       - name: Deploy to Cloud Host via SSH
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.SSH_HOST != ''
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -108,6 +108,11 @@ jobs:
           flutter-version: '3.19.x'
           channel: 'stable'
           cache: true
+
+      - name: Recreate Android Project files
+        run: |
+          cd myface_mobile
+          flutter create --platforms=android --org com.antigravity .
 
       - name: Install Flutter Packages
         run: |
