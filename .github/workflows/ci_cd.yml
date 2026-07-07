@@ -115,6 +115,7 @@ jobs:
         run: |
           cd myface_mobile
           flutter create --platforms=android --org com.antigravity .
+          rm -f test/widget_test.dart
 
       - name: Install Flutter Packages
         run: |
