@@ -117,6 +117,7 @@ jobs:
           flutter create --platforms=android --org com.antigravity .
           rm -f test/widget_test.dart
           sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle
+          sed -i 's/<application/<application android:usesCleartextTraffic="true"/g' android/app/src/main/AndroidManifest.xml
 
       - name: Install Flutter Packages
         run: |
