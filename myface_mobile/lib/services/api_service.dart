@@ -79,7 +79,7 @@ class ApiService {
   Future<bool> checkHealth() async {
     try {
       final res = await _sendRequest((client) => client.get(
-        Uri.parse('${AppConfig.instance.baseUrl}/health'),
+        Uri.parse('${AppConfig.instance.baseUrl}/api/v1/health'),
       ));
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
@@ -94,7 +94,7 @@ class ApiService {
   /// Fetches enrolled user profile summaries list.
   Future<List<UserProfile>> fetchUsers() async {
     final res = await _sendRequest((client) => client.get(
-      Uri.parse('${AppConfig.instance.baseUrl}/users'),
+      Uri.parse('${AppConfig.instance.baseUrl}/api/v1/users'),
     ));
 
     if (res.statusCode == 200) {
@@ -109,7 +109,7 @@ class ApiService {
   /// Fetches system authentication attempt audit logs.
   Future<List<LogEntry>> fetchLogs() async {
     final res = await _sendRequest((client) => client.get(
-      Uri.parse('${AppConfig.instance.baseUrl}/logs'),
+      Uri.parse('${AppConfig.instance.baseUrl}/api/v1/logs'),
     ));
 
     if (res.statusCode == 200) {
@@ -124,7 +124,7 @@ class ApiService {
   /// Fetches system diagnostics performance metrics (EER/AUC).
   Future<Map<String, dynamic>> fetchMetrics() async {
     final res = await _sendRequest((client) => client.get(
-      Uri.parse('${AppConfig.instance.baseUrl}/metrics'),
+      Uri.parse('${AppConfig.instance.baseUrl}/api/v1/metrics'),
     ));
 
     if (res.statusCode == 200) {
@@ -142,7 +142,7 @@ class ApiService {
     }
 
     final client = _getClient();
-    final uri = Uri.parse('${AppConfig.instance.baseUrl}/enroll');
+    final uri = Uri.parse('${AppConfig.instance.baseUrl}/api/v1/enroll');
     final request = http.MultipartRequest('POST', uri);
     request.fields['username'] = username;
 
@@ -175,7 +175,7 @@ class ApiService {
     }
 
     final client = _getClient();
-    final uri = Uri.parse('${AppConfig.instance.baseUrl}/authenticate');
+    final uri = Uri.parse('${AppConfig.instance.baseUrl}/api/v1/authenticate');
     final request = http.MultipartRequest('POST', uri);
     request.fields['user_id'] = userId;
     request.files.add(await http.MultipartFile.fromPath('file', imageFile.path));
