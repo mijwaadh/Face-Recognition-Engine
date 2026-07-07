@@ -116,6 +116,7 @@ jobs:
           cd myface_mobile
           flutter create --platforms=android --org com.antigravity .
           rm -f test/widget_test.dart
+          sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle
 
       - name: Install Flutter Packages
         run: |
