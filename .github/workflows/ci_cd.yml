@@ -118,6 +118,7 @@ jobs:
           rm -f test/widget_test.dart
           sed -i 's/minSdkVersion.*/minSdkVersion 21/g' android/app/build.gradle
           sed -i 's/<application/<application android:usesCleartextTraffic="true"/g' android/app/src/main/AndroidManifest.xml
+          sed -i 's/<manifest xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android">/<manifest xmlns:android="http:\/\/schemas.android.com\/apk\/res\/android"><uses-permission android:name="android.permission.INTERNET" \/>/g' android/app/src/main/AndroidManifest.xml
 
       - name: Install Flutter Packages
         run: |
