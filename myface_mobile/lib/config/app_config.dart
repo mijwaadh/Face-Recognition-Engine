@@ -12,8 +12,8 @@ class AppConfig {
   static const String keyLivenessThreshold = 'liveness_threshold';
 
   // Default production cloud API URL (Removes localhost defaults)
-  static const String defaultProdUrl = 'https://api.myfaceauth.com';
-  static const String defaultDevUrl = 'http://10.0.2.2:8000'; // Fallback mapping inside emulator
+  static const String defaultProdUrl = 'https://biometric-auth-backend.onrender.com';
+  static const String defaultDevUrl = 'https://biometric-auth-backend.onrender.com';
   
   static const int requestTimeoutSeconds = 30;
   static const int maxRetryAttempts = 3;
@@ -45,7 +45,10 @@ class AppConfig {
   /// Gets backend API host URL based on environment and custom overrides.
   String get baseUrl {
     final storedUrl = _prefs.getString(keyBaseUrl);
-    if (storedUrl != null && storedUrl.isNotEmpty) {
+    if (storedUrl != null && 
+        storedUrl.isNotEmpty && 
+        storedUrl != 'http://10.0.2.2:8000' && 
+        storedUrl != 'https://api.myfaceauth.com') {
       return storedUrl;
     }
     return environment == AppEnvironment.production ? defaultProdUrl : defaultDevUrl;
