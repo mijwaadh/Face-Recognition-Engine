@@ -71,18 +71,14 @@ class ApiService {
 
   /// Pings backend healthcheck endpoint.
   Future<bool> checkHealth() async {
-    try {
-      final res = await _sendRequest((client) => client.get(
-        Uri.parse('${AppConfig.instance.baseUrl}/api/v1/health'),
-      ));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        return data['status'] == 'healthy';
-      }
-      return false;
-    } catch (_) {
-      return false;
+    final res = await _sendRequest((client) => client.get(
+      Uri.parse('${AppConfig.instance.baseUrl}/api/v1/health'),
+    ));
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data['status'] == 'healthy';
     }
+    return false;
   }
 
   /// Fetches enrolled user profile summaries list.

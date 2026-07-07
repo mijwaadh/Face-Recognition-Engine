@@ -1056,13 +1056,20 @@ class _SettingsTabState extends State<SettingsTab> {
         // Restore old url if new one failed health check
         await AppConfig.instance.setBaseUrl(oldUrl);
       }
-    } catch (_) {
+    } catch (e) {
       setState(() {
         _testingConnection = false;
         _isConnected = false;
       });
       // Restore old url
       await AppConfig.instance.setBaseUrl(oldUrl);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Connection failed details: $e'),
+          duration: const Duration(seconds: 6),
+        ),
+      );
     }
   }
 
