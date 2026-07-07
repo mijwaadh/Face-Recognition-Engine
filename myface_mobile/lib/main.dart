@@ -212,6 +212,7 @@ class _VerifyTabState extends State<VerifyTab> {
       setState(() {
         _isLoadingUsers = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load users: $e')),
       );
@@ -228,6 +229,7 @@ class _VerifyTabState extends State<VerifyTab> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error picking image: $e')),
       );
@@ -270,6 +272,7 @@ class _VerifyTabState extends State<VerifyTab> {
       setState(() {
         _isVerifying = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Verification error: $e')),
       );
@@ -567,6 +570,7 @@ class _EnrollTabState extends State<EnrollTab> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error capturing photo: $e')),
       );
@@ -601,6 +605,7 @@ class _EnrollTabState extends State<EnrollTab> {
         _images.clear();
         _usernameController.clear();
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('User registered successfully!')),
       );
@@ -608,6 +613,7 @@ class _EnrollTabState extends State<EnrollTab> {
       setState(() {
         _isRegistering = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Registration failed: $e')),
       );
@@ -847,6 +853,7 @@ class _AnalyticsTabState extends State<AnalyticsTab> {
       setState(() {
         _isLoading = false;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load metrics: $e')),
       );
@@ -1073,10 +1080,12 @@ class _SettingsTabState extends State<SettingsTab> {
       await AppConfig.instance.setMatchThreshold(_matchThreshold);
       await AppConfig.instance.setLivenessThreshold(_livenessThreshold);
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Settings saved successfully!')),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save settings: $e')),
       );
