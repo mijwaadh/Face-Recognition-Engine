@@ -1,0 +1,49 @@
+# Render Infrastructure-as-Code Configuration
+# To deploy this service:
+# 1. Connect your GitHub repository to Render.
+# 2. Render will automatically detect this render.yaml and deploy the service.
+
+services:
+  - type: web
+    name: biometric-auth-backend
+    env: docker
+    plan: free # Use 'free' for testing; note that data is ephemeral on the free plan.
+    
+    # Render routes traffic to the port defined by the PORT environment variable.
+    # Uvicorn/Gunicorn will bind to this port automatically.
+    
+    # Path for health checks. Render will monitor this path during deployment to ensure
+    # the container starts up successfully before replacing the old instance.
+    healthCheckPath: /api/v1/health
+
+    # Root directory of the backend repository (use "." if it's the root of the repo)
+    rootDir: .
+
+    # Environment variables injected into the container at runtime
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DEBUG
+        value: "false"
+      - key: DATA_DIR
+        value: /app/data
+      - key: LOG_DIR
+        value: /app/logs
+      - key: MATCH_THRESHOLD
+        value: "0.75"
+      - key: LIVENESS_THRESHOLD
+        value: "0.85"
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SECRET_KEY
+        generateValue: true # Generates a secure random key automatically if not already set
+
+    # PERSISTENCE NOTE:
+    # Render's free tier uses an ephemeral disk. To persist registered users (db.json)
+    # across container restarts, sleep states, and deployments, you must upgrade the
+    # service plan to "starter" (or higher) and uncomment the disk configuration below:
+    #
+    # disk:
+    #   name: biometric-data
+    #   mountPath: /app/data
+    #   sizeGB: 1

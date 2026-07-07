@@ -11,8 +11,8 @@ echo "Starting FastAPI app behind Gunicorn process manager..."
 exec gunicorn myface.api.main:app \
     --workers 4 \
     --worker-class uvicorn.workers.UvicornWorker \
-    --bind 0.0.0.0:8000 \
+    --bind 0.0.0.0:${PORT:-8000} \
     --timeout 120 \
-    --access-logfile /app/logs/gunicorn-access.log \
-    --error-logfile /app/logs/gunicorn-error.log \
+    --access-logfile - \
+    --error-logfile - \
     --log-level info
